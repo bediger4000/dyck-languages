@@ -23,7 +23,7 @@ func main() {
 
 	mismatch := false
 	for _, r := range runes {
-		if m, ok := matches[r]; ok {
+		if m, ok := matches[r]; len(stack) > 0 && ok {
 			top := stack[len(stack)-1]
 			if m != top {
 				mismatch = true
@@ -50,12 +50,14 @@ func setupMatches(matchPairs string) map[rune]rune {
 	var last rune
 	i := 0
 	for _, r := range matchPairs {
-		i++
-		if (i & 0x01) == 0 {
+		switch i {
+		case 0:
+			last = r
+			i = 1
+		case 1:
 			matches[r] = last // Find a ']', must find '[' on stack top
-			continue
+			i = 0
 		}
-		last = r
 	}
 	return matches
 }
