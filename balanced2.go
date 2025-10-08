@@ -11,18 +11,14 @@ import (
 )
 
 func main() {
-
 	matchPairs := flag.String("m", "(){}[]", "pairs of matching characters")
-
 	flag.Parse()
 
+	mismatch := false
 	var stack []rune
-	runes := []rune(flag.Arg(0))
-
 	matches := setupMatches(*matchPairs)
 
-	mismatch := false
-	for _, r := range runes {
+	for _, r := range []rune(flag.Arg(0)) {
 		if m, ok := matches[r]; len(stack) > 0 && ok {
 			top := stack[len(stack)-1]
 			if m != top {
@@ -48,16 +44,12 @@ func main() {
 func setupMatches(matchPairs string) map[rune]rune {
 	matches := make(map[rune]rune)
 	var last rune
-	i := 0
-	for _, r := range matchPairs {
-		switch i {
-		case 0:
-			last = r
-			i = 1
-		case 1:
+	for i, r := range []rune(matchPairs) {
+		if i&0x01 == 1 {
 			matches[r] = last // Find a ']', must find '[' on stack top
-			i = 0
+			continue
 		}
+		last = r
 	}
 	return matches
 }
