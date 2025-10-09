@@ -23,12 +23,11 @@ var matching = map[rune]rune{
 func main() {
 	str := []rune(os.Args[1])
 
-	if !validate(str) {
+	depth, valid := calculateDepth(str)
+	if !valid {
 		fmt.Printf("unbalanced expression\n")
 		return
 	}
-
-	depth := calculateDepth(str)
 
 	mismatch := false
 
@@ -62,55 +61,32 @@ foundMismatch:
 	fmt.Printf("expression balanced\n")
 }
 
-func calculateDepth(str []rune) int {
-	d, depth := 0, 0
+// calculateDepth finds the max "depth" of nesting,
+// without regard to matching. Returns depth and true
+// if there's an even number of parens, and there's a
+// closing paren/brace/bracket for every opening paren/brace/bracket
+func calculateDepth(str []rune) (int, bool) {
+	var depth, maxDepth int
+
+unbalanced:
 	for _, r := range str {
 		switch r {
 		case '(', '[', '{':
-			d++
-			if d > depth {
-				depth = d
+			depth++
+			if depth > maxDepth {
+				maxDepth = depth
 			}
 		case ')', ']', '}':
-			d--
-		}
-	}
-	return depth
-}
-
-func validate(str []rune) bool {
-	if len(str)%2 != 0 {
-		return false
-	}
-
-	var parens, braces, brackets [2]int
-
-	for _, r := range str {
-		switch r {
-		case '(':
-			parens[0]++
-		case ')':
-			parens[1]++
-		case '[':
-			brackets[0]++
-		case ']':
-			brackets[1]++
-		case '{':
-			braces[0]++
-		case '}':
-			braces[1]++
+			depth--
+			if depth < 0 {
+				break unbalanced
+			}
 		}
 	}
 
-	if parens[0] != parens[1] {
-		return false
-	}
-	if brackets[0] != brackets[1] {
-		return false
-	}
-	if braces[0] != braces[1] {
-		return false
+	if depth != 0 {
+		return 0, false
 	}
 
-	return true
+	return maxDepth, true
 }
