@@ -14,13 +14,14 @@ import (
 	"os"
 )
 
-var matching = map[rune]rune{
-	'(': ')',
-	'[': ']',
-	'{': '}',
-}
+var matching [128]rune
 
 func main() {
+
+	matching['('] = ')'
+	matching['['] = ']'
+	matching['{'] = '}'
+
 	str := []rune(os.Args[1])
 
 	depth, valid := calculateDepth(str)
@@ -64,11 +65,11 @@ foundMismatch:
 // calculateDepth finds the max "depth" of nesting,
 // without regard to matching. Returns depth and true
 // if there's an even number of parens, and there's a
-// closing paren/brace/bracket for every opening paren/brace/bracket
+// closing paren/brace/bracket for every opening paren/brace/bracket,
+// regardless of type of paren/brace/bracket
 func calculateDepth(str []rune) (int, bool) {
 	var depth, maxDepth int
 
-unbalanced:
 	for _, r := range str {
 		switch r {
 		case '(', '[', '{':
@@ -79,7 +80,7 @@ unbalanced:
 		case ')', ']', '}':
 			depth--
 			if depth < 0 {
-				break unbalanced
+				return 0, false
 			}
 		}
 	}
