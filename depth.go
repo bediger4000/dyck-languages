@@ -30,9 +30,6 @@ func main() {
 		return
 	}
 
-	mismatch := false
-
-foundMismatch:
 	for d := 1; d <= depth; d++ {
 		currentDepth := 0
 		var thesis rune
@@ -46,8 +43,8 @@ foundMismatch:
 			case ')', ']', '}':
 				if currentDepth == d {
 					if r != thesis {
-						mismatch = true
-						break foundMismatch
+						fmt.Printf("expression unbalanced\n")
+						return
 					}
 				}
 				currentDepth--
@@ -55,10 +52,6 @@ foundMismatch:
 		}
 	}
 
-	if mismatch {
-		fmt.Printf("expression unbalanced\n")
-		return
-	}
 	fmt.Printf("expression balanced\n")
 }
 
