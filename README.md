@@ -30,4 +30,37 @@ It's a well-studied problem, and has applications in a lot of fields.
 
 ---
 
-https://stackoverflow.com/questions/2509358/how-to-find-validity-of-a-string-of-parentheses-curly-brackets-and-square-brack
+Four Programs doing Dyck word recognition differently:
+
+`counter.go` counts characters, +1 for an opening parenthesis, -1 for a closing.
+If the counter becomes negative, or is non-zero at the end of the word,
+the parentheses do not balance.
+
+`reduction.go` - excises matching pairs of opening and closing parens/braces/brackets
+until it can't.
+A zero-length resulting string means the initial string was a Dyck word.
+
+`balanced2.go` - the standard push opening characters on a stack,
+if you find a closing character, pop the stack, if that popped character
+isn't the matching opening character, the string isn't balanced.
+
+`depth.go` - find maximum nesting of opening and closing characters
+regardless of match.
+For each nesting depth, finding opening character sets the appropriate
+matching closing character.
+The next character at that nesting depth must be the matching closing character,
+or else the string is unbalanced.
+
+For the string `((([{}{}{()}))))`, the nesting depth works out like this:
+
+```
+1  (              )
+2   (            ) 
+3    (          )
+4     [        )
+5      {}{}{  }    
+6           ()
+```
+
+Depth 4, the '[' doesn't match the ')'.
+This is an unbalanced string.
