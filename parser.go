@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -12,7 +13,11 @@ func main() {
 	l := len(runes)
 	consumed := 0
 	for consumed < l {
-		c, err := parse(runes[consumed:], 0)
+		if runes[consumed] != '(' {
+			break
+		}
+		consumed++
+		c, err := parse(runes[consumed:])
 		if err != nil {
 			log.Fatalf("not balanced: %v", err)
 		}
@@ -25,29 +30,25 @@ func main() {
 	fmt.Printf("balanced\n")
 }
 
-func parse(runes []rune, depth int) (int, error) {
-	if runes[0] != '(' {
-		return 0, fmt.Errorf("depth %d, substring %q doesn't begin with (", depth, string(runes))
-	}
-	if len(runes) < 2 {
-		return 0, fmt.Errorf("depth %d, substring %q missing )", depth, string(runes))
-	}
-	consumed := 1
+func parse(runes []rune) (int, error) {
 	max := len(runes)
-	for r := runes[consumed]; consumed < max; r = runes[consumed] {
-		fmt.Printf("depth %d, consumed %d, '%c', %q\n", depth, consumed, r, string(runes[consumed:]))
+	if max == 0 {
+		return 0, errors.New("Missing )")
+	}
+	consumed := 0
+	for consumed < max {
+		r := runes[consumed]
+		consumed++
 		switch r {
 		case '(':
-			if c, e := parse(runes[consumed:], depth+1); e != nil {
+			c, e := parse(runes[consumed:])
+			if e != nil {
 				return consumed + c, e
-			} else {
-				consumed += c
 			}
+			consumed += c
 		case ')':
-			consumed++
-			fmt.Printf("depth %d, returning %d, nil\n", depth, consumed)
 			return consumed, nil
 		}
 	}
-	return consumed, fmt.Errorf("depth %d, missing matching ), consumed %d of %d", depth, consumed, max)
+	return 0, errors.New("Missing )")
 }
