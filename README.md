@@ -30,7 +30,7 @@ It's a well-studied problem, and has applications in a lot of fields.
 
 ---
 
-Four Programs doing Dyck word recognition differently:
+Five Programs doing Dyck word recognition differently:
 
 `counter.go` counts characters, +1 for an opening parenthesis, -1 for a closing.
 If the counter becomes negative, or is non-zero at the end of the word,
@@ -64,3 +64,8 @@ For the string `((([{}{}{()}))))`, the nesting depth works out like this:
 
 Depth 4, the '[' doesn't match the ')'.
 This is an unbalanced string.
+
+`parser.go` - recurses on finding a '('. Uses the function call stack instead of the
+explicit FIFO stack of `balanced2.go`
+`parser2.go` is a generalization of `parser.go` that can match Dyck-N languages,
+N &gt; 0.
